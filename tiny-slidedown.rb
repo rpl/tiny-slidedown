@@ -155,6 +155,8 @@ class SlideDown
 
   def self.run!(argv = ARGV)
     args = argv.dup
+    @@local_template = false
+    @@output_text = ""
 
     if args.empty?
       puts USAGE
@@ -166,6 +168,8 @@ class SlideDown
         option_parser(source).parse!(args)
       end
     end
+
+    return @@output_text
   end
 
   def self.option_parser(source)
@@ -173,7 +177,7 @@ class SlideDown
       opts.on('-h', '--help') { puts USAGE }
       opts.on('-l', '--local') { @@local_template = true }
       opts.on('-t', '--template TEMPLATE') do |template|
-        render(source, template)
+        @@output_text = render(source, template)
       end
     end
   end
@@ -181,7 +185,7 @@ class SlideDown
   def self.render(source_path, template = "default")
     if source_path
       slideshow = new(File.read(source_path))
-      puts slideshow.render(template)
+      slideshow.render(template)
     end
   end
 
@@ -257,4 +261,6 @@ class SlideDown
   end
 end
 
-SlideDown.run!
+if __FILE__ == $PROGRAM_NAME
+  puts SlideDown.run!
+end
